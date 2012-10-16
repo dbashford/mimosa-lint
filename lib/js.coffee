@@ -1,23 +1,24 @@
 jslint = require('jshint').JSHINT
 _ =      require 'lodash'
+logger = require "mimosa-logger"
 
 class JSLinter
 
-  lifecycleRegistration: (config, register, @logger) ->
+  lifecycleRegistration: (config, register) ->
     extensions = if config.lint.vendor.javascript
-      @logger.debug "vendor being linted, so everything needs to pass through linting"
+      logger.debug "vendor being linted, so everything needs to pass through linting"
       config.extensions.javascript
     else if config.lint.copied.javascript and config.lint.compiled.javascript
-      @logger.debug "Linting compiled/copied JavaScript only"
+      logger.debug "Linting compiled/copied JavaScript only"
       config.extensions.javascript
     else if config.lint.copied.javascript
-      @logger.debug "Linting copied JavaScript only"
+      logger.debug "Linting copied JavaScript only"
       ['js']
     else if config.lint.compiled.javascript
-      @logger.debug "Linting compiled JavaScript only"
+      logger.debug "Linting compiled JavaScript only"
       _.filter config.extensions.javascript, (ext) -> ext isnt 'js'
     else
-      @logger.debug "JavaScript linting is entirely turned off"
+      logger.debug "JavaScript linting is entirely turned off"
       []
 
     return if extensions.length is 0
@@ -33,11 +34,11 @@ class JSLinter
     options.files.forEach (file) =>
       if file.outputFileText?.length > 0
         if options.isCopy and not options.isVendor and not config.lint.copied.javascript
-          @logger.debug "Not linting copied script [[ #{file.inputFileName} ]]"
+          logger.debug "Not linting copied script [[ #{file.inputFileName} ]]"
         else if options.isVendor and not config.lint.vendor.javascript
-          @logger.debug "Not linting vendor script [[ #{file.inputFileName} ]]"
+          logger.debug "Not linting vendor script [[ #{file.inputFileName} ]]"
         else if options.isJavascript and not options.isCopy and not config.lint.compiled.javascript
-          @logger.debug "Not linting compiled script [[ #{file.inputFileName} ]]"
+          logger.debug "Not linting compiled script [[ #{file.inputFileName} ]]"
         else
           lintok = jslint file.outputFileText, @options
           unless lintok
@@ -49,6 +50,6 @@ class JSLinter
   log: (fileName, message, lineNumber) ->
     message = "JavaScript Lint Error: #{message}, in file [[ #{fileName} ]]"
     message += ", at line number [[ #{lineNumber} ]]" if lineNumber
-    @logger.warn message
+    logger.warn message
 
 module.exports = new JSLinter()

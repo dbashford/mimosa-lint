@@ -1,7 +1,7 @@
 {
   "name": "mimosa-lint",
   "preferGlobal": "false",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "http://www.mimosajs.com",
   "author": "David Bashford",
   "description": "Linting module for Mimosa browser development workflow tool",
@@ -28,7 +28,8 @@
   "dependencies": {
     "csslint": "0.9.9",
     "jshint": "0.9.0",
-    "lodash": "0.7.0"
+    "lodash": "0.7.0",
+    "mimosa-logger": "0.0.1"
   },
   "license": "MIT",
   "engines": {
