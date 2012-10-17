@@ -1,6 +1,6 @@
 csslint = require("csslint").CSSLint
 _ =       require "lodash"
-logger = require "mimosa-logger"
+logger =  require "mimosa-logger"
 
 class CSSLinter
 
