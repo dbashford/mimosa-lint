@@ -1,10 +1,13 @@
 jslint =  require './lib/js'
 csslint = require './lib/css'
+config = require './config'
 
-class MimosaLinters
+registration = (conf, register) ->
+  jslint.lifecycleRegistration conf, register
+  csslint.lifecycleRegistration conf, register
 
-  lifecycleRegistration: (config, register) ->
-    jslint.lifecycleRegistration config, register
-    csslint.lifecycleRegistration config, register
-
-module.exports = new MimosaLinters()
+module.exports =
+  registration: registration
+  defaults:     config.defaults
+  placeholder:  config.placeholder
+  validate:     config.validate
