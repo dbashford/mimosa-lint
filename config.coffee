@@ -44,14 +44,13 @@ exports.validate = (config) ->
   errors = []
   if config.lint?
     langs = ['javascript', 'css']
-    if typeof config.lint is "object"
+    if typeof config.lint is "object" and not Array.isArray(config.lint)
       for type in ['compiled', 'copied', 'vendor']
         typeObj = config.lint[type]
         if typeObj?
-          if typeof typeObj is "object"
+          if typeof typeObj is "object" and not Array.isArray(typeObj)
             for lang in langs
               langConf = typeObj[lang]
-              console.log type, lang
               if langConf?
                 unless typeof langConf is "boolean"
                   errors.push "lint.#{type}.#{lang} must be boolean."
@@ -59,11 +58,11 @@ exports.validate = (config) ->
             errors.push "lint.#{type} must be an object."
       if config.lint.rules?
         rs = config.lint.rules
-        if typeof rs is "object"
+        if typeof rs is "object" and not Array.isArray(rs)
           for lang in langs
             langConf = rs[lang]
             if langConf?
-              unless typeof langConf is "object"
+              unless typeof langConf is "object" and not Array.isArray(langConf)
                 errors.push "lint.rules.#{lang} must be an object"
         else
          errors.push "lint.rules must be an object."
