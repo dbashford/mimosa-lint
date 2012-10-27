@@ -1,10 +1,10 @@
 jslint = require('jshint').JSHINT
 _ =      require 'lodash'
-logger = require "mimosa-logger"
+logger = require "logmimosa"
 
 class JSLinter
 
-  lifecycleRegistration: (config, register) ->
+  registration: (config, register) ->
     extensions = if config.lint.vendor.javascript
       logger.debug "vendor being linted, so everything needs to pass through linting"
       config.extensions.javascript

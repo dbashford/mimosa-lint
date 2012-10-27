@@ -1,12 +1,12 @@
 csslint = require("csslint").CSSLint
 _ =       require "lodash"
-logger =  require "mimosa-logger"
+logger =  require "logmimosa"
 
 class CSSLinter
 
   rules:{}
 
-  lifecycleRegistration: (config, register) ->
+  registration: (config, register) ->
     extensions = if config.lint.vendor.css
       logger.debug "vendor being linted, so everything needs to pass through linting"
       config.extensions.css
