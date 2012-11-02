@@ -1,3 +1,5 @@
+"use strict"
+
 jslint =  require './lib/js'
 csslint = require './lib/css'
 config = require './config'

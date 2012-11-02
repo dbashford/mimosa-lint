@@ -1,3 +1,5 @@
+"use strict"
+
 csslint = require("csslint").CSSLint
 _ =       require "lodash"
 logger =  require "logmimosa"

@@ -1,3 +1,5 @@
+"use strict"
+
 jslint = require('jshint').JSHINT
 _ =      require 'lodash'
 logger = require "logmimosa"
