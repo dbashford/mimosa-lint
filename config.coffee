@@ -19,23 +19,24 @@ exports.placeholder = ->
   """
   \t
 
-    # lint:                                 # settings for js, css linting/hinting
-      # compiled:                           # settings for compiled files
-        # javascript:true                   # fire jshint on successful compile of meta-language to javascript
-        # css:true                          # fire csslint on successful compile of meta-language to css
-      # copied:                             # settings for copied files, files already in .css and .js files
-        # javascript: true                  # fire jshint for copied javascript files
-        # css: true                         # fire csslint for copied css files
-      # vendor:                             # settings for vendor files
-        # javascript: false                 # fire jshint for copied vendor javascript files (like jquery)
-        # css: false                        # fire csslint for copied vendor css files (like bootstrap)
-      # rules:                              # All hints/lints come with defaults built in.  Here is where you'd override those defaults.
-                                            # Below is listed an example of an overridden default for each lint type, also listed, next
-                                            # to the lint types is the url to find the settings for overriding.
-        # javascript:                       # Settings: http://www.jshint.com/options/
-          # plusplus: true                  # This is an example override, this is not a default
-        # css:                              # Settings: https://github.com/stubbornella/csslint/wiki/Rules
-          # floats: false                   # This is an example override, this is not a default
+    # lint:                      # settings for js, css linting/hinting
+      # compiled:                # settings for compiled files
+        # javascript:true        # fire jshint on successful compile of meta-language to javascript
+        # css:true               # fire csslint on successful compile of meta-language to css
+      # copied:                  # settings for copied files, files already in .css and .js files
+        # javascript: true       # fire jshint for copied javascript files
+        # css: true              # fire csslint for copied css files
+      # vendor:                  # settings for vendor files
+        # javascript: false      # fire jshint for copied vendor javascript files (like jquery)
+        # css: false             # fire csslint for copied vendor css files (like bootstrap)
+      # rules:                   # All hints/lints come with defaults built in.  Here is where
+                                 # you'd override those defaults. Below is listed an example of an
+                                 # overridden default for each lint type, also listed, next to the
+                                 # lint types is the url to find the settings for overriding.
+        # javascript:            # Settings: http://www.jshint.com/options/
+          # plusplus: true       # This is an example override, this is not a default
+        # css:                   # Settings: https://github.com/stubbornella/csslint/wiki/Rules
+          # floats: false        # This is an example override, this is not a default
   """
 
 ###
