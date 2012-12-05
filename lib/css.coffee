@@ -1,7 +1,6 @@
 "use strict"
 
 csslint = require("csslint").CSSLint
-_ =       require "lodash"
 logger =  require "logmimosa"
 
 class CSSLinter
@@ -20,7 +19,7 @@ class CSSLinter
       ['css']
     else if config.lint.compiled.css
       logger.debug "Linting compiled CSS only"
-      _.filter config.extensions.css, (ext) -> ext isnt 'css'
+      config.extensions.css.filter (ext) -> ext isnt 'css'
     else
       logger.debug "CSS linting is entirely turned off"
       []

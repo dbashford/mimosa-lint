@@ -1,7 +1,6 @@
 "use strict"
 
 jslint = require('jshint').JSHINT
-_ =      require 'lodash'
 logger = require "logmimosa"
 
 class JSLinter
@@ -18,7 +17,7 @@ class JSLinter
       ['js']
     else if config.lint.compiled.javascript
       logger.debug "Linting compiled JavaScript only"
-      _.filter config.extensions.javascript, (ext) -> ext isnt 'js'
+      config.extensions.javascript.filter (ext) -> ext isnt 'js'
     else
       logger.debug "JavaScript linting is entirely turned off"
       []
