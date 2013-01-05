@@ -39,18 +39,25 @@ class CSSLinter
     i = 0
     options.files.forEach (file) =>
       if file.outputFileText?.length > 0
-        # if is copy, and not a vendor copy, and copy is turned off
-        if options.isCopy and not options.isVendor and not config.lint.copied.css
-          logger.debug "Not linting copied script [[ #{file.inputFileName} ]]"
-        # if is vendor and vendor is not turned off
-        else if options.isVendor and not config.lint.vendor.css
-          logger.debug "Not linting vendor script [[ #{file.inputFileName} ]]"
-        # if is css, but not copied css and compiled css is not turned off
-        else if options.isCSS and not options.isCopy and not config.lint.compiled.css
-          logger.debug "Not linting compiled script [[ #{file.inputFileName} ]]"
-        else
-          result = csslint.verify file.outputFileText, @rules
-          @_writeMessage(file.inputFileName, message) for message in result.messages
+        doit = true
+        if config.lint.exclude? and config.lint.exclude.indexOf(file.inputFileName) isnt -1
+          doit = false
+        if config.lint.excludeRegex? and file.inputFileName.match(config.lint.excludeRegex)
+          doit = false
+
+        if doit
+          # if is copy, and not a vendor copy, and copy is turned off
+          if options.isCopy and not options.isVendor and not config.lint.copied.css
+            logger.debug "Not linting copied script [[ #{file.inputFileName} ]]"
+          # if is vendor and vendor is not turned off
+          else if options.isVendor and not config.lint.vendor.css
+            logger.debug "Not linting vendor script [[ #{file.inputFileName} ]]"
+          # if is css, but not copied css and compiled css is not turned off
+          else if options.isCSS and not options.isCopy and not config.lint.compiled.css
+            logger.debug "Not linting compiled script [[ #{file.inputFileName} ]]"
+          else
+            result = csslint.verify file.outputFileText, @rules
+            @_writeMessage(file.inputFileName, message) for message in result.messages
       next() if ++i is options.files.length
 
   _writeMessage: (fileName, message) ->

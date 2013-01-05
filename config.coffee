@@ -1,7 +1,12 @@
 "use strict"
 
+path = require "path"
+
+windowsDrive = /^[A-Za-z]:\\/
+
 exports.defaults = ->
   lint:
+    exclude: []
     compiled:
       javascript:true
       css:true
@@ -20,6 +25,9 @@ exports.placeholder = ->
   \t
 
     # lint:                      # settings for js, css linting/hinting
+      # exclude:[]               # array of strings or regexes that match files to not lint,
+                                 # strings are paths that can be relative to the watch.compiledDir
+                                 # or absolute
       # compiled:                # settings for compiled files
         # javascript:true        # fire jshint on successful compile of meta-language to javascript
         # css:true               # fire csslint on successful compile of meta-language to css
@@ -48,6 +56,7 @@ exports.validate = (config) ->
   if config.lint?
     langs = ['javascript', 'css']
     if typeof config.lint is "object" and not Array.isArray(config.lint)
+
       for type in ['compiled', 'copied', 'vendor']
         typeObj = config.lint[type]
         if typeObj?
@@ -59,6 +68,7 @@ exports.validate = (config) ->
                   errors.push "lint.#{type}.#{lang} must be boolean."
           else
             errors.push "lint.#{type} must be an object."
+
       if config.lint.rules?
         rs = config.lint.rules
         if typeof rs is "object" and not Array.isArray(rs)
@@ -69,7 +79,37 @@ exports.validate = (config) ->
                 errors.push "lint.rules.#{lang} must be an object"
         else
          errors.push "lint.rules must be an object."
+
+
+     if config.lint.exclude?
+       if Array.isArray(config.lint.exclude)
+         regexes = []
+         newExclude = []
+         for exclude in config.lint.exclude
+           if typeof exclude is "string"
+             newExclude.push __determinePath exclude, config.watch.sourceDir
+           else if exclude instanceof RegExp
+             regexes.push exclude.source
+           else
+             errors.push "lint.exclude must be an array of strings and/or regexes."
+             break
+
+         if regexes.length > 0
+           config.lint.excludeRegex = new RegExp regexes.join("|"), "i"
+
+         config.lint.exclude = newExclude
+       else
+         errors.push "lint.exclude must be an array"
+
+
     else
       errors.push "lint configuration must be an object."
 
   errors
+
+
+
+__determinePath = (thePath, relativeTo) ->
+  return thePath if windowsDrive.test thePath
+  return thePath if thePath.indexOf("/") is 0
+  path.join relativeTo, thePath

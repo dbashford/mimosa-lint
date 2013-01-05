@@ -34,18 +34,25 @@ class JSLinter
     i = 0
     options.files.forEach (file) =>
       if file.outputFileText?.length > 0
-        if options.isCopy and not options.isVendor and not config.lint.copied.javascript
-          logger.debug "Not linting copied script [[ #{file.inputFileName} ]]"
-        else if options.isVendor and not config.lint.vendor.javascript
-          logger.debug "Not linting vendor script [[ #{file.inputFileName} ]]"
-        else if options.isJavascript and not options.isCopy and not config.lint.compiled.javascript
-          logger.debug "Not linting compiled script [[ #{file.inputFileName} ]]"
-        else
-          lintok = jslint file.outputFileText, @options
-          unless lintok
-            jslint.errors.forEach (e) =>
-              if e?
-                @log file.inputFileName, e.reason, e.line
+        doit = true
+        if config.lint.exclude? and config.lint.exclude.indexOf(file.inputFileName) isnt -1
+          doit = false
+        if config.lint.excludeRegex? and file.inputFileName.match(config.lint.excludeRegex)
+          doit = false
+
+        if doit
+          if options.isCopy and not options.isVendor and not config.lint.copied.javascript
+            logger.debug "Not linting copied script [[ #{file.inputFileName} ]]"
+          else if options.isVendor and not config.lint.vendor.javascript
+            logger.debug "Not linting vendor script [[ #{file.inputFileName} ]]"
+          else if options.isJavascript and not options.isCopy and not config.lint.compiled.javascript
+            logger.debug "Not linting compiled script [[ #{file.inputFileName} ]]"
+          else
+            lintok = jslint file.outputFileText, @options
+            unless lintok
+              jslint.errors.forEach (e) =>
+                if e?
+                  @log file.inputFileName, e.reason, e.line
       next() if ++i is options.files.length
 
   log: (fileName, message, lineNumber) ->
