@@ -1,5 +1,7 @@
 "use strict"
 
+logger = require "logmimosa"
+
 path = require "path"
 fs = require "fs"
 
