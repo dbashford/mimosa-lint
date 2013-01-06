@@ -64,6 +64,7 @@ exports.validate = (config) ->
     langs = ['javascript', 'css']
     if typeof config.lint is "object" and not Array.isArray(config.lint)
 
+
       for type in ['compiled', 'copied', 'vendor']
         typeObj = config.lint[type]
         if typeObj?
@@ -76,18 +77,17 @@ exports.validate = (config) ->
           else
             errors.push "lint.#{type} must be an object."
 
+
       if config.lint.rules?
         rs = config.lint.rules
         if typeof rs is "object" and not Array.isArray(rs)
 
           if config.lint.rules.jshintrc?
-            hintrcPath = __determinePath  config.lint.rules.jshintrc, config.root
-            if fs.existsSync hintrcPath
-              try
-                hintText = fs.readFileSync hintrcPath
-                config.lint.rules.rcRules = JSON.parse hintText
-              catch err
-                errors.push "Error reading .jshintrc at [[ #{hintrcPath} ]]: #{err}"
+            hintrcPath = __determinePath config.lint.rules.jshintrc, config.root
+            try
+              _checkHintRcPath(hintrcPath, config)
+            catch err
+              errors.push "Error reading .jshintrc at [[ #{hintrcPath} ]]: #{err}"
 
           for lang in langs
             langConf = rs[lang]
@@ -121,10 +121,19 @@ exports.validate = (config) ->
     else
       errors.push "lint configuration must be an object."
 
-
   errors
 
-
+_checkHintRcPath = (hintrcPath, config) ->
+  if fs.existsSync hintrcPath
+    hintText = fs.readFileSync hintrcPath
+    config.lint.rules.rcRules = JSON.parse hintText
+  else
+    hintrcPath = path.join(path.dirname(hintrcPath), '..', '.jshintrc')
+    dirname = path.dirname hintrcPath
+    if dirname.indexOf(path.sep) is dirname.lastIndexOf(path.sep)
+      logger.debug "Unable to find mimosa-config"
+      return null
+    _checkHintRcPath(hintrcPath, config)
 
 __determinePath = (thePath, relativeTo) ->
   return thePath if windowsDrive.test thePath
