@@ -28,6 +28,7 @@
   "dependencies": {
     "csslint": "0.9.9",
     "jshint": "0.9.1",
+    "lodash": "1.0.0-rc.3",
     "logmimosa": "0.3.0"
   },
   "license": "MIT",

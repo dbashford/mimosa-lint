@@ -1,6 +1,7 @@
 "use strict"
 
 jslint = require('jshint').JSHINT
+_ = require "lodash"
 logger = require "logmimosa"
 
 class JSLinter
@@ -24,7 +25,10 @@ class JSLinter
 
     return if extensions.length is 0
 
-    @options = config.lint.rules.javascript
+    @options = if config.lint.rules.rcRules
+      _.extend({}, config.lint.rules.rcRules, config.lint.rules.javascript)
+    else
+      config.lint.rules.javascript
 
     register ['buildFile','add','update'], 'afterCompile', @_lint, [extensions...]
 

@@ -1,6 +1,7 @@
 "use strict"
 
 path = require "path"
+fs = require "fs"
 
 windowsDrive = /^[A-Za-z]:\\/
 
@@ -17,6 +18,7 @@ exports.defaults = ->
       javascript: false
       css: false
     rules:
+      jshintrc:".jshintrc"
       javascript: {}
       css: {}
 
@@ -41,7 +43,12 @@ exports.placeholder = ->
                                  # you'd override those defaults. Below is listed an example of an
                                  # overridden default for each lint type, also listed, next to the
                                  # lint types is the url to find the settings for overriding.
-        # javascript:            # Settings: http://www.jshint.com/options/
+        # jshintrc: ".jshintrc"  # This is the path, either relative to the root of the project or
+                                 # absolute, to a .jshintrc file. By default mimosa will look at
+                                 # the root of the project for this file. The file does not need to
+                                 # be present. If it is present, it must be valid JSON. To learn
+        # javascript:            # Settings: http://www.jshint.com/options/, these settings will
+                                 # override any settings set up in the jshintrc
           # plusplus: true       # This is an example override, this is not a default
         # css:                   # Settings: https://github.com/stubbornella/csslint/wiki/Rules
           # floats: false        # This is an example override, this is not a default
@@ -72,6 +79,16 @@ exports.validate = (config) ->
       if config.lint.rules?
         rs = config.lint.rules
         if typeof rs is "object" and not Array.isArray(rs)
+
+          if config.lint.rules.jshintrc?
+            hintrcPath = __determinePath  config.lint.rules.jshintrc, config.root
+            if fs.existsSync hintrcPath
+              try
+                hintText = fs.readFileSync hintrcPath
+                config.lint.rules.rcRules = JSON.parse hintText
+              catch err
+                errors.push "Error reading .jshintrc at [[ #{hintrcPath} ]]: #{err}"
+
           for lang in langs
             langConf = rs[lang]
             if langConf?
@@ -101,9 +118,9 @@ exports.validate = (config) ->
        else
          errors.push "lint.exclude must be an array"
 
-
     else
       errors.push "lint configuration must be an object."
+
 
   errors
 
