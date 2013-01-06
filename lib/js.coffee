@@ -6,6 +6,16 @@ logger = require "logmimosa"
 
 class JSLinter
 
+  defaultOptions:
+    coffee:
+      boss: true
+      eqnull: true
+      shadow: true
+    iced:
+      boss: true
+      eqnull: true
+      shadow: true
+
   registration: (config, register) ->
     extensions = if config.lint.vendor.javascript
       logger.debug "vendor being linted, so everything needs to pass through linting"
@@ -35,6 +45,9 @@ class JSLinter
   _lint: (config, options, next) =>
     return next() unless options.files?.length > 0
 
+    rules = if @defaultOptions[options.extension]
+      _.extend({}, @defaultOptions[options.extension], @options)
+
     i = 0
     options.files.forEach (file) =>
       if file.outputFileText?.length > 0
@@ -52,7 +65,7 @@ class JSLinter
           else if options.isJavascript and not options.isCopy and not config.lint.compiled.javascript
             logger.debug "Not linting compiled script [[ #{file.inputFileName} ]]"
           else
-            lintok = jslint file.outputFileText, @options
+            lintok = jslint file.outputFileText, rules
             unless lintok
               jslint.errors.forEach (e) =>
                 if e?
