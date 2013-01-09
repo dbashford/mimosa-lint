@@ -5,8 +5,6 @@ logger = require "logmimosa"
 path = require "path"
 fs = require "fs"
 
-windowsDrive = /^[A-Za-z]:\\/
-
 exports.defaults = ->
   lint:
     exclude: []
@@ -60,68 +58,32 @@ exports.placeholder = ->
 TODO: check validity of individual rules?
 ###
 
-exports.validate = (config) ->
+exports.validate = (config, validators) ->
   errors = []
-  if config.lint?
+
+  if validators.ifExistsIsObject(errors, "lint config", config.lint)
     langs = ['javascript', 'css']
-    if typeof config.lint is "object" and not Array.isArray(config.lint)
+    for type in ['compiled', 'copied', 'vendor']
+      typeObj = config.lint[type]
+      if validators.ifExistsIsObject(errors, "lint.#{type}", typeObj)
+        for lang in langs
+          validators.ifExistsIsBoolean(errors, "lint.#{type}.#{lang}", typeObj[lang])
 
+    if validators.ifExistsIsObject(errors, "lint.rules", config.lint.rules)
+      if config.lint.rules.jshintrc?
+        hintrcPath = validators.determinePath config.lint.rules.jshintrc, config.root
+        try
+          _checkHintRcPath(hintrcPath, config)
+        catch err
+          errors.push "Error reading .jshintrc at [[ #{hintrcPath} ]]: #{err}"
 
-      for type in ['compiled', 'copied', 'vendor']
-        typeObj = config.lint[type]
-        if typeObj?
-          if typeof typeObj is "object" and not Array.isArray(typeObj)
-            for lang in langs
-              langConf = typeObj[lang]
-              if langConf?
-                unless typeof langConf is "boolean"
-                  errors.push "lint.#{type}.#{lang} must be boolean."
-          else
-            errors.push "lint.#{type} must be an object."
+      for lang in langs
+        langConf = config.lint.rules[lang]
+        if langConf?
+          unless typeof langConf is "object" and not Array.isArray(langConf)
+            errors.push "lint.rules.#{lang} must be an object"
 
-
-      if config.lint.rules?
-        rs = config.lint.rules
-        if typeof rs is "object" and not Array.isArray(rs)
-
-          if config.lint.rules.jshintrc?
-            hintrcPath = __determinePath config.lint.rules.jshintrc, config.root
-            try
-              _checkHintRcPath(hintrcPath, config)
-            catch err
-              errors.push "Error reading .jshintrc at [[ #{hintrcPath} ]]: #{err}"
-
-          for lang in langs
-            langConf = rs[lang]
-            if langConf?
-              unless typeof langConf is "object" and not Array.isArray(langConf)
-                errors.push "lint.rules.#{lang} must be an object"
-        else
-         errors.push "lint.rules must be an object."
-
-
-     if config.lint.exclude?
-       if Array.isArray(config.lint.exclude)
-         regexes = []
-         newExclude = []
-         for exclude in config.lint.exclude
-           if typeof exclude is "string"
-             newExclude.push __determinePath exclude, config.watch.sourceDir
-           else if exclude instanceof RegExp
-             regexes.push exclude.source
-           else
-             errors.push "lint.exclude must be an array of strings and/or regexes."
-             break
-
-         if regexes.length > 0
-           config.lint.excludeRegex = new RegExp regexes.join("|"), "i"
-
-         config.lint.exclude = newExclude
-       else
-         errors.push "lint.exclude must be an array"
-
-    else
-      errors.push "lint configuration must be an object."
+    validators.ifExistsFileExcludeWithRegexAndString(errors, "lint.exclude", config.lint, config.watch.sourceDir)
 
   errors
 
@@ -136,8 +98,3 @@ _checkHintRcPath = (hintrcPath, config) ->
       logger.debug "Unable to find mimosa-config"
       return null
     _checkHintRcPath(hintrcPath, config)
-
-__determinePath = (thePath, relativeTo) ->
-  return thePath if windowsDrive.test thePath
-  return thePath if thePath.indexOf("/") is 0
-  path.join relativeTo, thePath
