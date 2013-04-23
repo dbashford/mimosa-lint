@@ -1,7 +1,7 @@
 "use strict"
 
-jslint =  require './lib/js'
-csslint = require './lib/css'
+jslint =  require './linters/js'
+csslint = require './linters/css'
 config = require './config'
 
 registration = (conf, register) ->

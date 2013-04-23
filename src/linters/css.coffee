@@ -8,21 +8,22 @@ class CSSLinter
   rules:{}
 
   registration: (config, register) ->
-    extensions = if config.lint.vendor.css
+    extensions = null
+    if config.lint.vendor.css
       logger.debug "vendor being linted, so everything needs to pass through linting"
-      config.extensions.css
+      extensions = config.extensions.css
     else if config.lint.copied.css and config.lint.compiled.css
       logger.debug "Linting compiled and copied CSS"
-      config.extensions.css
+      extensions = config.extensions.css
     else if config.lint.copied.css
       logger.debug "Linting copied CSS only"
-      ['css']
+      extensions = ['css']
     else if config.lint.compiled.css
       logger.debug "Linting compiled CSS only"
-      config.extensions.css.filter (ext) -> ext isnt 'css'
+      extensions = config.extensions.css.filter (ext) -> ext isnt 'css'
     else
       logger.debug "CSS linting is entirely turned off"
-      []
+      extensions = []
 
     return if extensions.length is 0
 
@@ -34,7 +35,8 @@ class CSSLinter
     register ['add','update','buildExtension','buildFile'], 'afterCompile', @_lint, [extensions...]
 
   _lint: (config, options, next) =>
-    return next() unless options.files?.length > 0
+    hasFiles = options.files?.length > 0
+    return next() unless hasFiles
 
     i = 0
     options.files.forEach (file) =>

@@ -17,21 +17,22 @@ class JSLinter
       shadow: true
 
   registration: (config, register) ->
-    extensions = if config.lint.vendor.javascript
+    extensions = null
+    if config.lint.vendor.javascript
       logger.debug "vendor being linted, so everything needs to pass through linting"
-      config.extensions.javascript
+      extensions = config.extensions.javascript
     else if config.lint.copied.javascript and config.lint.compiled.javascript
       logger.debug "Linting compiled/copied JavaScript only"
-      config.extensions.javascript
+      extensions = config.extensions.javascript
     else if config.lint.copied.javascript
       logger.debug "Linting copied JavaScript only"
-      ['js']
+      extensions = ['js']
     else if config.lint.compiled.javascript
       logger.debug "Linting compiled JavaScript only"
-      config.extensions.javascript.filter (ext) -> ext isnt 'js'
+      extensions = config.extensions.javascript.filter (ext) -> ext isnt 'js'
     else
       logger.debug "JavaScript linting is entirely turned off"
-      []
+      extensions = []
 
     return if extensions.length is 0
 
@@ -43,7 +44,8 @@ class JSLinter
     register ['buildFile','add','update'], 'afterCompile', @_lint, [extensions...]
 
   _lint: (config, options, next) =>
-    return next() unless options.files?.length > 0
+    hasFiles = options.files?.length > 0
+    return next() unless hasFiles
 
     rules = if @defaultOptions[options.extension]
       _.extend({}, @defaultOptions[options.extension], @options)
