@@ -46,7 +46,7 @@ exports.placeholder = ->
         # jshintrc: ".jshintrc"  # This is the path, either relative to the root of the project or
                                  # absolute, to a .jshintrc file. By default mimosa will look at
                                  # the root of the project for this file. The file does not need to
-                                 # be present. If it is present, it must be valid JSON. To learn
+                                 # be present. If it is present, it must be valid JSON.
         # javascript:            # Settings: http://www.jshint.com/options/, these settings will
                                  # override any settings set up in the jshintrc
           # plusplus: true       # This is an example override, this is not a default
@@ -90,7 +90,10 @@ exports.validate = (config, validators) ->
 _checkHintRcPath = (hintrcPath, config) ->
   if fs.existsSync hintrcPath
     hintText = fs.readFileSync hintrcPath
-    config.lint.rules.rcRules = JSON.parse hintText
+    try
+      config.lint.rules.rcRules = JSON.parse hintText
+    catch err
+      logger.error "Cannot parse jshintrc file at [[ #{hintrcPath} ]], #{err}"
   else
     hintrcPath = path.join(path.dirname(hintrcPath), '..', '.jshintrc')
     dirname = path.dirname hintrcPath
