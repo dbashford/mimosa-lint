@@ -75,7 +75,7 @@ exports.validate = (config, validators) ->
         try
           _checkHintRcPath(hintrcPath, config)
         catch err
-          errors.push "Error reading .jshintrc at [[ #{hintrcPath} ]]: #{err}"
+          errors.push "Error reading .jshintrc: #{err}"
 
       for lang in langs
         langConf = config.lint.rules[lang]
@@ -93,7 +93,7 @@ _checkHintRcPath = (hintrcPath, config) ->
     try
       config.lint.rules.rcRules = JSON.parse hintText
     catch err
-      logger.error "Cannot parse jshintrc file at [[ #{hintrcPath} ]], #{err}"
+      throw "Cannot parse jshintrc file at [[ #{hintrcPath} ]], #{err}"
   else
     hintrcPath = path.join(path.dirname(hintrcPath), '..', '.jshintrc')
     dirname = path.dirname hintrcPath
