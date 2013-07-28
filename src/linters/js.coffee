@@ -11,10 +11,12 @@ class JSLinter
       boss: true
       eqnull: true
       shadow: true
+      expr: true
     iced:
       boss: true
       eqnull: true
       shadow: true
+      expr: true
 
   registration: (config, register) ->
     extensions = null
