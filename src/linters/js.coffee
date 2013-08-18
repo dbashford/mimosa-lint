@@ -49,8 +49,8 @@ class JSLinter
     hasFiles = options.files?.length > 0
     return next() unless hasFiles
 
-    rules = if @defaultOptions[options.extension]
-      _.extend({}, @defaultOptions[options.extension], @options)
+    defaultOptions = @defaultOptions[options.extension] or {}
+    rules = _.extend({}, @defaultOptions[options.extension], @options)
 
     i = 0
     options.files.forEach (file) =>
