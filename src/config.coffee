@@ -47,7 +47,7 @@ exports.placeholder = ->
                                  # absolute, to a .jshintrc file. By default mimosa will look at
                                  # the root of the project for this file. The file does not need to
                                  # be present. If it is present, it must be valid JSON.
-        # javascript:            # Settings: http://www.jshint.com/options/, these settings will
+        # javascript:            # Settings: http://www.jshint.com/docs/options/, these settings will
                                  # override any settings set up in the jshintrc
           # plusplus: true       # This is an example override, this is not a default
         # css:                   # Settings: https://github.com/stubbornella/csslint/wiki/Rules
