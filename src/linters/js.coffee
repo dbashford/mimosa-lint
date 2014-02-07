@@ -2,7 +2,7 @@
 
 jslint = require('jshint').JSHINT
 _ = require "lodash"
-logger = require "logmimosa"
+logger = null
 
 class JSLinter
 
@@ -19,6 +19,7 @@ class JSLinter
       expr: true
 
   registration: (config, register) ->
+    logger = config.log
     extensions = null
     if config.lint.vendor.javascript
       logger.debug "vendor being linted, so everything needs to pass through linting"

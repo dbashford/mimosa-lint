@@ -1,7 +1,5 @@
 "use strict"
 
-logger = require "logmimosa"
-
 path = require "path"
 fs = require "fs"
 
@@ -98,6 +96,6 @@ _checkHintRcPath = (hintrcPath, config) ->
     hintrcPath = path.join(path.dirname(hintrcPath), '..', '.jshintrc')
     dirname = path.dirname hintrcPath
     if dirname.indexOf(path.sep) is dirname.lastIndexOf(path.sep)
-      logger.debug "Unable to find mimosa-config"
+      config.log.debug "Unable to find mimosa-config"
       return null
     _checkHintRcPath(hintrcPath, config)

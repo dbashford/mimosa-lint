@@ -1,13 +1,15 @@
 "use strict"
 
 csslint = require("csslint").CSSLint
-logger =  require "logmimosa"
+logger = null
 
 class CSSLinter
 
   rules:{}
 
   registration: (config, register) ->
+    logger = config.log
+
     extensions = null
     if config.lint.vendor.css
       logger.debug "vendor being linted, so everything needs to pass through linting"
@@ -63,8 +65,8 @@ class CSSLinter
       next() if ++i is options.files.length
 
   _writeMessage: (fileName, message) ->
-    output =  "CSSLint Warning: #{message.message} In #{fileName},"
-    output += " on line #{message.line}, column #{message.col}," if message.line?
+    output =  "CSSLint Warning: #{message.message} In [[ #{fileName} ]],"
+    output += " on line [[ #{message.line} ]], column #{message.col}," if message.line?
     output += " from CSSLint rule ID '#{message.rule.id}'."
     logger.warn output
 
